@@ -17,7 +17,7 @@ npm run app
 The script requires the following environments variables to be set:
 
 - `NOTION_TOKEN` is the Notion integration auth web token.
-- `NOTION_FPIRACOM_DATABASE_ID` is the ID of the Notion database to fetch blog posts from.
+- `NOTION_DATABASE_ID` is the ID of the Notion database to fetch blog posts from.
 - `REPO_DIR` is the root repo dir. It is used to determine the location of the `_posts` and `_drafts` dirs.
 - `PUBLISH_TO_POSTS` is a boolean to determine where converted pages should be published to. If `true`, to `_posts` directory. To `_drafts` otherwise.
 

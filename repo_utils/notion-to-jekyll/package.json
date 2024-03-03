@@ -4,8 +4,8 @@
   "description": "notion to jekyll bridge",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
     "app": "node app.js",
+    "dry": "node app.js --dry-run",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

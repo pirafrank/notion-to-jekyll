@@ -12,7 +12,22 @@
         "<node_internals>/**"
       ],
       "cwd": "${workspaceFolder}/repo_utils/notion-to-jekyll",
-      "program": "${workspaceFolder}/repo_utils/notion-to-jekyll/app.js"
+      "program": "${workspaceFolder}/repo_utils/notion-to-jekyll/app.js",
+      "envFile": "${workspaceFolder}/repo_utils/notion-to-jekyll/.env"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "notion-to-jekyll (dry-run)",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "cwd": "${workspaceFolder}/repo_utils/notion-to-jekyll",
+      "program": "${workspaceFolder}/repo_utils/notion-to-jekyll/app.js",
+      "args": [
+        "--dry-run"
+      ],
+      "envFile": "${workspaceFolder}/repo_utils/notion-to-jekyll/.env"
     }
   ]
 }
