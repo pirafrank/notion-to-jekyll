@@ -1,10 +1,10 @@
-const dotenv = require('dotenv');
+const dotenv = require('dotenv').config();
 const { Client } = require("@notionhq/client")
 const { NotionToMarkdown } = require("notion-to-md");
 const fs = require("fs");
+const yargs = require('yargs');
+const CURRENT_VERSION = require("./package.json").version;
 
-// Load environment variables from .env file
-dotenv.config();
 // Initializing a client
 const notion = new Client({
   auth: process.env.NOTION_TOKEN,
@@ -25,6 +25,10 @@ const publishToPosts =
 
 // we need to get today's date in the format YYYY-MM-DD, and query w/o time
 const today = new Date().toISOString().split("T")[0];
+
+// global flag to determine if we run in dry-run mode
+let dryRun = false;
+
 
 /**
  * we can either set the REPO_DIR env var to the absolute path of the repo
@@ -165,22 +169,32 @@ Deleting matching page in dir before writing new file...`
     processResult.action = "fileExistsInDraftsDir";
     // delete match in _drafts dir
     try {
-      fs.unlinkSync(outputDir + `/${match}`);
-      console.log(`Deleted file: ${match}`);
+      if(!dryRun) {
+        fs.unlinkSync(outputDir + `/${match}`);
+        console.log(`Deleted file: ${match}`);
+        processResult.action = processResult.action + "DeleteOk";
+      } else {
+        console.log(`** Dry-run mode ** : would have deleted file: ${match}`);
+      }
     } catch (err) {
-      processResult.action = "onErrorDeleteFile";
+      processResult.action = processResult.action + "OnErrorDeleteFile";
       console.error(`Error deleting file ${match}: ${err.message}`);
+      return processResult;
     }
   }
 
   // if you got this far, it's time to write to disk.
   // try writing the blocks to a markdown file.
   try {
-    fs.writeFileSync(filepath, mdContent);
-    processResult.action = "writeOk";
-    console.log(`File "${filename}" has been saved!`);
+    if (!dryRun) {
+      fs.writeFileSync(filepath, mdContent);
+      processResult.action = processResult.action + "WriteOk";
+      console.log(`File "${filename}" has been saved!`);
+    } else {
+      console.log(`** Dry-run mode ** : would have written file: ${filename}`);
+    }
   } catch (err) {
-    processResult.action = "onError";
+    processResult.action = processResult.action + "WriteOnError";
     console.error(`Error writing file ${filename}: ${err.message}`);
   }
   return processResult;
@@ -188,6 +202,7 @@ Deleting matching page in dir before writing new file...`
 
 const main = async () => {
   console.log(`notion-to-jekyll started.`);
+  dryRun && console.log(`Running in dry-run mode.`);
 
   const repoDir = getRepoRoot();
   console.log(`Using repo directory: ${repoDir}`);
@@ -206,13 +221,39 @@ const main = async () => {
   return 0;
 }
 
-// Run the main function
-main()
-  .then((r) => {
-    console.log(`All done, exit code: ${r}`);
-    process.exit(0);
+// Define the command to run
+yargs
+  .command({
+    command: "run",
+    aliases: ["r", "x", "pippo"],
+    describe: "Run the notion-to-jekyll script",
+    builder: (yargs) => {
+      return yargs
+        .option("dry-run", {
+          alias: "d",
+          describe: "Run the script in dry-run mode",
+          type: "boolean",
+          default: false,
+        });
+    },
+    handler: async (argv) => {
+      try {
+        // Run the main function
+        dryRun = !!argv?.dryRun;
+        const result = await main();
+        console.log(`All done, exit code: ${result}`);
+        process.exit(0);
+      } catch (error) {
+        error.message = `Error: ${error.message}`;
+        process.exit(error?.code ? error.code : 1);
+      }
+    },
   })
-  .catch((error) => {
-    error.message = `Error: ${error.message}`;
-    process.exit(error?.code ? error.code : 1);
-  });
+  .version(CURRENT_VERSION)
+  .demandCommand(1, "You need to specify a command to run")
+  .help()
+  .alias({
+    h: "help",
+    v: "version",
+  })
+  .argv;
