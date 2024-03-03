@@ -20,5 +20,9 @@ The script requires the following environments variables to be set:
 - `NOTION_DATABASE_ID` is the ID of the Notion database to fetch blog posts from.
 - `REPO_DIR` is the root repo dir. It is used to determine the location of the `_posts` and `_drafts` dirs.
 - `PUBLISH_TO_POSTS` is a boolean to determine where converted pages should be published to. If `true`, to `_posts` directory. To `_drafts` otherwise.
+- `RELATIVE_DATE` is an int as string to determine the date of post to fetch.
+  - `0` means the date will be the current date;
+  - a negative number means the date will be the current date minus the number of days;
+  - a positive number means the date will be the current date plus the number of days.
 
 Assets will always be published to the `static/postimages` directory.

@@ -9,6 +9,13 @@ const {
 } = require("./lib/clients");
 const { parseResults } = require("./lib/process");
 
+const calculateDate = (relDate) => {
+  if (!relDate) return null;
+  const date = new Date();
+  date.setDate(date.getDate() + parseInt(relDate, 10));
+  return date.toISOString().split("T")[0];
+};
+
 const initChecks = (config) => {
   for (const key in config) {
     if (config[key] === undefined || config[key] === null) {
@@ -31,9 +38,8 @@ const init = (args) => {
       process.env.PUBLISH_TO_POSTS.toLowerCase() === "true",
     // flag to determine if we run in dry-run mode
     dryRun: !!args?.dryRun,
-    // set to today's date in the format YYYY-MM-DD.
-    // we need to get today's date in the format YYYY-MM-DD, and query w/o time
-    date: new Date().toISOString().split("T")[0],
+    // set date in the format YYYY-MM-DD to query notion API w/o time
+    date: calculateDate(process.env.RELATIVE_DATE),
     // repo root directory
     repoRoot: process.env.REPO_DIR,
   };
