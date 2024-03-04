@@ -14,7 +14,7 @@ const {
 // - create a wrapper function to write a file to disk
 // - create a wrapper function to delete a file on disk, if it exists
 
-const processPage = async (page, config) => {
+const processPage = async (page, config, cache) => {
   const n2m = getNotionToMarkdownConverter();
   const date = config.date;
   const outputPath = config.outputPath;
@@ -37,7 +37,7 @@ const processPage = async (page, config) => {
     && console.log(`** Dry-run mode ** : would have created directory: ${processResult.targetAssetPath}`)
     || createDirectories(processResult.targetAssetPath);
   // configure the transformers for current Notion page processing
-  configNotionToMarkdownTransformers(processResult);
+  configNotionToMarkdownTransformers(processResult, cache);
 
   const mdBlocks = await n2m.pageToMarkdown(processResult.pageId);
   const mdString = await n2m.toMarkdownString(mdBlocks);
@@ -118,10 +118,13 @@ const parseResults = async (results, config) => {
     return;
   }
 
+  const cache = require(config.repoRoot + "/.notion-to-jekyll.json");
+  console.log(`Loaded cache from ${config.repoRoot}/.notion-to-jekyll.json, version ${cache.version}`)
+
   console.log(`Found ${results.length} blog posts to publish.`);
   for (let i = 0; i < results.length; i++) {
     const page = results[i];
-    const processResult = await processPage(page, config);
+    const processResult = await processPage(page, config, cache);
     console.log(
       `Processed page: ${processResult.pageName} (${processResult.pageUrl})`
     );

@@ -1,9 +1,12 @@
 const fs = require('fs');
 const axios = require('axios');
-const mime = require('mime-types');
 const { getConfig } = require('./init');
 
-const downloadBinaryStream = async (url, iteration, fileName) => {
+const extractExtensionFromUrl = (url) => {
+  return url.split("?")[0]?.split(".")?.pop();
+};
+
+const downloadBinaryStream = async (url, writeToPath) => {
   try {
     const config = getConfig();
     const response = await axios({
@@ -11,45 +14,28 @@ const downloadBinaryStream = async (url, iteration, fileName) => {
       method: "GET",
       responseType: "stream",
     });
-    const extension = mime.extension(response?.headers["content-type"]);
 
-    const random = Math.floor(Math.random() * 100000);
-    fileName = fileName || `image-${random}.${extension}`;
-
-    const writeToPath = `${iteration.targetAssetPath}/${fileName}`;
-    const publishedUrl = [
-      config.siteUrl,
-      config.siteBaseurl,
-      config.assetsDir,
-      iteration.targetAssetDir,
-      fileName,
-    ]
-      .filter((x) => x !== "")
-      .join("/");
-
-    if(config.dryRun) {
-      console.log(`** Dry-run mode ** : would have downloaded file to: ${writeToPath}`);
-      return publishedUrl;
+    if (config.dryRun) {
+      console.log(
+        `** Dry-run mode ** : would have downloaded file to: ${writeToPath}`
+      );
+      return;
     }
 
     const writer = fs.createWriteStream(writeToPath);
     response.data.pipe(writer);
 
     return new Promise((resolve, reject) => {
-      writer.on("finish", () => {
-        return resolve(
-          // return the URL the asset will have once published
-          `${publishedUrl}`
-        )
-      });
+      writer.on("finish", resolve);
       writer.on("error", reject);
     });
   } catch (error) {
-    console.error("Error downloading image:", error);
-    return "";
+    console.error(`Error downloading asset to write to: ${writeToPath}`, error);
+    throw error;
   }
-}
+};
 
 module.exports = {
+  extractExtensionFromUrl,
   downloadBinaryStream,
 };

@@ -63,6 +63,24 @@ const getFolderWithMaxIdInPath = (dirPath) => {
   );
 }
 
+const writeObjectToJsonFile = (filepath, object) => {
+  try {
+    fs.writeFileSync(filepath, JSON.stringify(object, null, 2));
+  } catch (e) {
+    console.error(`Error writing object to JSON file: ${e}`);
+    throw e;
+  }
+};
+
+const writeObjectToYamlFile = (filepath, object) => {
+  try {
+    fs.writeFileSync(filepath, yaml.dump(object));
+  } catch (e) {
+    console.error(`Error writing object to YAML file: ${e}`);
+    throw e;
+  }
+};
+
 module.exports = {
   getAbsoluteRepoRoot,
   createDirectories,
@@ -70,4 +88,6 @@ module.exports = {
   readYamlFile,
   listDirsInPath,
   getFolderWithMaxIdInPath,
+  writeObjectToJsonFile,
+  writeObjectToYamlFile,
 };
