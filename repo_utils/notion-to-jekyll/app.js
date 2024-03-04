@@ -1,77 +1,34 @@
 require('dotenv').config();
 const yargs = require('yargs');
 const CURRENT_VERSION = require("./package.json").version;
-const { getRepoRoot, createDirectories } = require("./lib/fs");
+const { initConfig } = require("./lib/init");
+const { createDirectories } = require("./lib/fs");
 const {
   initNotionClient,
   initNotionToMarkdownConverter,
-  getBlogPostsToPublish
+  getBlogPostsToPublish,
 } = require("./lib/clients");
 const { parseResults } = require("./lib/process");
-
-const calculateDate = (relDate) => {
-  if (!relDate) return null;
-  const date = new Date();
-  date.setDate(date.getDate() + parseInt(relDate, 10));
-  return date.toISOString().split("T")[0];
-};
-
-const initChecks = (config) => {
-  for (const key in config) {
-    if (config[key] === undefined || config[key] === null) {
-      throw new Error(
-        `Missing configuration for key: ${key}. Please check your env vars.`
-      );
-    }
-  }
-}
-
-const init = (args) => {
-  const config = {
-    // Notion integration token, used to authenticate to the Notion API
-    notionToken: process.env.NOTION_TOKEN,
-    // Notion Database ID, where information is sourced from
-    databaseId: process.env.NOTION_DATABASE_ID,
-    // global flag to determine if we publish to _posts or _drafts dir
-    publishToPosts:
-      process.env.PUBLISH_TO_POSTS &&
-      process.env.PUBLISH_TO_POSTS.toLowerCase() === "true",
-    // flag to determine if we run in dry-run mode
-    dryRun: !!args?.dryRun,
-    // set date in the format YYYY-MM-DD to query notion API w/o time
-    date: calculateDate(process.env.RELATIVE_DATE),
-    // repo root directory
-    repoRoot: process.env.REPO_DIR,
-  };
-
-  initChecks(config);
-  initNotionClient(config.notionToken);
-  initNotionToMarkdownConverter();
-
-  return config;
-}
 
 const main = async (args) => {
   console.log(`notion-to-jekyll started.`);
 
   try {
-    const config = init(args);
+    const config = initConfig(args);
     config.dryRun && console.log(`Running in dry-run mode.`);
     console.log(`Using date: ${config.date}`);
+    console.log(`Using repo directory: ${config.repoRoot}`);
+    console.log(`Using output directory: ${config.outputPath}`);
 
-    const repoDir = getRepoRoot(config.repoRoot);
-    console.log(`Using repo directory: ${repoDir}`);
+    createDirectories(config.postsPath);
+    createDirectories(config.draftsPath);
+    createDirectories(config.assetsPath);
 
-    const draftsDir = repoDir + "/_drafts";
-    const postsDir = repoDir + "/_posts";
-    createDirectories(postsDir);
-    createDirectories(draftsDir);
-
-    const outputDir = config.publishToPosts ? postsDir : draftsDir;
-    console.log(`Using output directory: ${outputDir}`);
+    initNotionClient(config.notionToken);
+    initNotionToMarkdownConverter();
 
     const posts = await getBlogPostsToPublish(config);
-    await parseResults(posts, config, outputDir);
+    await parseResults(posts, config);
 
     return 0;
   } catch (error) {
@@ -84,7 +41,6 @@ const main = async (args) => {
 yargs
   .command({
     command: "$0",
-    aliases: ["r", "x", "pippo"],
     describe: "Run the notion-to-jekyll script",
     builder: (yargs) => {
       return yargs.option("dry-run", {

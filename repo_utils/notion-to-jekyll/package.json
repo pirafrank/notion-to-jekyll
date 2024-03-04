@@ -24,7 +24,10 @@
   "homepage": "https://github.com/pirafrank/fpiracom/blob/main/repo_utils/notion-to-jekyll/README.md",
   "dependencies": {
     "@notionhq/client": "^2.2.14",
+    "axios": "^1.6.7",
     "dotenv": "^16.4.5",
+    "js-yaml": "^4.1.0",
+    "mime-types": "^2.1.35",
     "notion-to-md": "^3.1.1"
   }
 }

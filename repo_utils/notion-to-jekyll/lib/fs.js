@@ -1,4 +1,6 @@
 const fs = require("fs");
+const path = require("path");
+const yaml = require("js-yaml");
 
 /**
  * we can either set the REPO_DIR env var to the absolute path of the repo
@@ -7,7 +9,7 @@ const fs = require("fs");
  * (process.cwd()).
  * @returns
  */
-const getRepoRoot = (dirpath) => {
+const getAbsoluteRepoRoot = (dirpath) => {
   return dirpath.startsWith("/") ? dirpath : process.cwd() + "/" + dirpath;
 };
 
@@ -29,8 +31,43 @@ const checkForSlugInFolder = (dir, pageSlug) => {
   return match ? match : null;
 };
 
+const readYamlFile = (filepath) => {
+  try {
+    const data = fs.readFileSync(filepath, "utf8");
+    const parsedData = yaml.load(data);
+    return parsedData;
+  } catch (e) {
+    console.error(`Error reading YAML file: ${e}`);
+    throw e;
+  }
+};
+
+const listDirsInPath = (dirPath) => {
+  return (
+    fs
+      .readdirSync(dirPath)
+      // get only directories
+      .filter((item) => fs.statSync(path.join(dirPath, item)).isDirectory())
+  );
+}
+
+const getFolderWithMaxIdInPath = (dirPath) => {
+  return (
+    listDirsInPath(dirPath)
+      // filter items with only numbers in name
+      .filter((item) => /^\d+$/.test(item))
+      // convert to numbers
+      .map((item) => parseInt(item, 10))
+      // get biggest one
+      .sort((a, b) => b - a)[0]
+  );
+}
+
 module.exports = {
-  getRepoRoot,
+  getAbsoluteRepoRoot,
   createDirectories,
   checkForSlugInFolder,
+  readYamlFile,
+  listDirsInPath,
+  getFolderWithMaxIdInPath,
 };

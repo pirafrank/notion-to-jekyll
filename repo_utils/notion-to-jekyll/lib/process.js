@@ -1,19 +1,43 @@
 const fs = require("fs");
-const { checkForSlugInFolder } = require("./fs");
-const { getNotionToMarkdownConverter } = require("./clients");
+const crypto = require("crypto");
+const {
+  checkForSlugInFolder,
+  getFolderWithMaxIdInPath,
+  createDirectories,
+} = require("./fs");
+const {
+  configNotionToMarkdownTransformers,
+  getNotionToMarkdownConverter,
+} = require("./clients");
 
-const processPage = async (page, config, outputDir) => {
+// TODO:
+// - create a wrapper function to write a file to disk
+// - create a wrapper function to delete a file on disk, if it exists
+
+const processPage = async (page, config) => {
   const n2m = getNotionToMarkdownConverter();
   const date = config.date;
+  const outputPath = config.outputPath;
   const processResult = {};
+  const targetAssetDir = getFolderWithMaxIdInPath(config.assetsPath) + 1;
 
   processResult.pageId = page.id;
+  processResult.hash = crypto.createHash("sha256").update(page.id).digest("hex");
+  processResult.targetAssetDir = targetAssetDir;
+  processResult.targetAssetPath = `${config.assetsPath}/${targetAssetDir}`;
   processResult.pageUrl =
     `https://www.notion.so/${processResult.pageId.replace(/-/g,"")}`;
   processResult.pageName = page?.properties?.Name?.title[0]?.plain_text;
   processResult.pageSlug = processResult.pageName
     .toLowerCase()
     .replace(/\s/g, "-");
+
+  // create the target asset directory for current Notion page
+  config.dryRun
+    && console.log(`** Dry-run mode ** : would have created directory: ${processResult.targetAssetPath}`)
+    || createDirectories(processResult.targetAssetPath);
+  // configure the transformers for current Notion page processing
+  configNotionToMarkdownTransformers(processResult);
 
   const mdBlocks = await n2m.pageToMarkdown(processResult.pageId);
   const mdString = await n2m.toMarkdownString(mdBlocks);
@@ -24,17 +48,17 @@ const processPage = async (page, config, outputDir) => {
     .toLowerCase()
     .replace(" ", "-");
   const filename = `${date}-${processResult.pageSlug}.md`;
-  const filepath = outputDir + `/${filename}`;
+  const filepath = `${outputPath}/${filename}`;
   console.log(`About to write post to file: ${filepath}`);
 
   // check if file already exists in target dir
-  const match = checkForSlugInFolder(outputDir, processResult.pageSlug);
+  const match = checkForSlugInFolder(outputPath, processResult.pageSlug);
 
   // if file exists in _posts dir, skip processing.
   // I won't overwrite published posts!
   if (config.publishToPosts && match && match.length > 0) {
     console.log(
-      `File with slug ${processResult.pageSlug} already exists in ${outputDir}
+      `File with slug ${processResult.pageSlug} already exists in ${outputPath}
 Matching filename is: ${match}
 Skipping processing this page...`
     );
@@ -49,7 +73,7 @@ Skipping processing this page...`
   // publish date of the post.
   if (!config.publishToPosts && match && match.length > 0) {
     console.log(
-      `File with slug "${processResult.pageSlug}" already exists in ${outputDir}
+      `File with slug "${processResult.pageSlug}" already exists in ${outputPath}
 Matching filename is: ${match}
 Deleting matching page in dir before writing new file...`
     );
@@ -57,7 +81,7 @@ Deleting matching page in dir before writing new file...`
     // delete match in _drafts dir
     try {
       if (!config.dryRun) {
-        fs.unlinkSync(outputDir + `/${match}`);
+        fs.unlinkSync(outputPath + `/${match}`);
         console.log(`Deleted file: ${match}`);
         processResult.action = processResult.action + "DeleteOk";
       } else {
@@ -87,7 +111,7 @@ Deleting matching page in dir before writing new file...`
   return processResult;
 };
 
-const parseResults = async (results, config, outputDir) => {
+const parseResults = async (results, config) => {
   const date = config.date;
   if (results && results.length === 0) {
     console.log(`No blog posts to publish for date: ${date}.`);
@@ -97,7 +121,7 @@ const parseResults = async (results, config, outputDir) => {
   console.log(`Found ${results.length} blog posts to publish.`);
   for (let i = 0; i < results.length; i++) {
     const page = results[i];
-    const processResult = await processPage(page, config, outputDir);
+    const processResult = await processPage(page, config);
     console.log(
       `Processed page: ${processResult.pageName} (${processResult.pageUrl})`
     );

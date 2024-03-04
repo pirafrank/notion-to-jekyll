@@ -1,5 +1,7 @@
 const { Client } = require("@notionhq/client");
 const { NotionToMarkdown } = require("notion-to-md");
+const { getTransformers } = require("./transformers");
+
 
 let _notionClient = null;
 let _notionToMarkdownConverter = null;
@@ -32,6 +34,17 @@ const getNotionToMarkdownConverter = () => {
   if (!_notionToMarkdownConverter)
     throw new Error("notion-to-markdown converter not initialized.");
   return _notionToMarkdownConverter;
+}
+
+const configNotionToMarkdownTransformers = (iteration) => {
+  const n2m = getNotionToMarkdownConverter();
+  const tfx = getTransformers(n2m, iteration);
+  for (i = 0; i < tfx.length; i++) {
+    _notionToMarkdownConverter.setCustomTransformer(
+      tfx[i].blockType,
+      tfx[i].transformer
+    );
+  }
 }
 
 const getBlogPostsToPublish = async (config) => {
@@ -91,5 +104,6 @@ module.exports = {
   getNotionClient,
   initNotionToMarkdownConverter,
   getNotionToMarkdownConverter,
+  configNotionToMarkdownTransformers,
   getBlogPostsToPublish,
 };
