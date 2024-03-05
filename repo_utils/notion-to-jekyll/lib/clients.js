@@ -36,9 +36,9 @@ const getNotionToMarkdownConverter = () => {
   return _notionToMarkdownConverter;
 }
 
-const configNotionToMarkdownTransformers = (iteration, cache) => {
+const configNotionToMarkdownTransformers = (iteration) => {
   const n2m = getNotionToMarkdownConverter();
-  const tfx = getTransformers(n2m, iteration, cache);
+  const tfx = getTransformers(n2m, iteration);
   for (i = 0; i < tfx.length; i++) {
     _notionToMarkdownConverter.setCustomTransformer(
       tfx[i].blockType,

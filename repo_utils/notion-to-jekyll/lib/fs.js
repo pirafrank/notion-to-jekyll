@@ -25,6 +25,19 @@ const createDirectory = (dirPath) => {
   });
 };
 
+const filenamemify = (filename) => {
+  filename = filename
+    .toLowerCase()
+    .replace(/\s/g, "-")
+    .replace(/[^a-zA-Z0-9-_]/g, "")
+    .slice(0, 50);
+  const lastChar = filename.charAt(filename.length - 1);
+  if (!lastChar.match(/[a-zA-Z0-9]/)) {
+    filename = filename.slice(0, -1);
+  }
+  return filename;
+};
+
 const checkForSlugInFolder = (dir, pageSlug) => {
   const files = fs.readdirSync(dir);
   const match = files.find((file) => file.includes(pageSlug));
@@ -81,13 +94,22 @@ const writeObjectToYamlFile = (filepath, object) => {
   }
 };
 
+const persistCache = (cachePath, cache) => {
+  cache.sequence = cache.sequence + 1;
+  cache.lastUpdate = new Date().toISOString();
+  writeObjectToJsonFile(cachePath, cache);
+  console.log(`Cache saved to ${cachePath}`);
+};
+
 module.exports = {
   getAbsoluteRepoRoot,
   createDirectory,
+  filenamemify,
   checkForSlugInFolder,
   readYamlFile,
   listDirsInPath,
   getFolderWithMaxIdInPath,
   writeObjectToJsonFile,
   writeObjectToYamlFile,
+  persistCache,
 };

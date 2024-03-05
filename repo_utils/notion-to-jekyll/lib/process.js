@@ -1,6 +1,7 @@
 const fs = require("fs");
 const crypto = require("crypto");
 const {
+  filenamemify,
   checkForSlugInFolder,
   getFolderWithMaxIdInPath,
 } = require("./fs");
@@ -14,18 +15,13 @@ const { convertPropertiesToJekyllFrontmatter } = require("./frontmatter");
 // - create a wrapper function to write a file to disk
 // - create a wrapper function to delete a file on disk, if it exists
 
-const calculateFilename = (date, pageSlug) => {
-  let filename = pageSlug.slice(0, 50);
-  const lastChar = filename.charAt(filename.length - 1);
-  if (!lastChar.match(/[a-zA-Z0-9]/)) {
-    filename = filename.slice(0, -1);
-  }
-  filename = `${date}-${filename}.md`;
+const calculateMdFilename = (date, pageSlug) => {
+  const filename = `${date}-${pageSlug}.md`;
   console.log(`Calculated filename: ${filename}\n\tfor page slug: ${pageSlug}`);
   return filename;
 };
 
-const processPage = async (page, config, cache) => {
+const processPage = async (page, config) => {
   const n2m = getNotionToMarkdownConverter();
   const date = config.date;
   const outputPath = config.outputPath;
@@ -36,25 +32,27 @@ const processPage = async (page, config, cache) => {
   processResult.hash = crypto.createHash("sha256").update(page.id).digest("hex");
   processResult.targetAssetDir = targetAssetDir;
   processResult.targetAssetPath = `${config.assetsPath}/${targetAssetDir}`;
+  // init to true to create the asset dir only once per Notion page processing
+  processResult.createFolder = true;
   processResult.pageUrl =
     `https://www.notion.so/${processResult.pageId.replace(/-/g,"")}`;
   processResult.pageName = page?.properties?.Name?.title[0]?.plain_text;
-  processResult.pageSlug = processResult.pageName
-    .toLowerCase()
-    .replace(/\s/g, "-")
-    .replace(/[^a-zA-Z0-9-_]/g, "");
+  processResult.pageSlug = filenamemify(processResult.pageName);
+
 
   // convert Notion page properties to Jekyll frontmatter
-  const frontmatter = convertPropertiesToJekyllFrontmatter(page);
+  const frontmatter = await convertPropertiesToJekyllFrontmatter(
+    processResult, page?.properties
+  );
   // configure the transformers for current Notion page processing
-  configNotionToMarkdownTransformers(processResult, cache);
+  configNotionToMarkdownTransformers(processResult);
   // actually process the page
   const mdBlocks = await n2m.pageToMarkdown(processResult.pageId);
   const mdString = await n2m.toMarkdownString(mdBlocks);
   const mdContent = mdString?.parent;
 
   // calculate the output filename
-  let filename = calculateFilename(date, processResult.pageSlug);
+  let filename = calculateMdFilename(date, processResult.pageSlug);
   const filepath = `${outputPath}/${filename}`;
   console.log(`About to write post to file: ${filepath}`);
 
@@ -125,13 +123,10 @@ const parseResults = async (results, config) => {
     return;
   }
 
-  const cache = require(config.repoRoot + "/.notion-to-jekyll.json");
-  console.log(`Loaded cache from ${config.repoRoot}/.notion-to-jekyll.json, version ${cache.version}`)
-
   console.log(`Found ${results.length} blog posts to publish.`);
   for (let i = 0; i < results.length; i++) {
     const page = results[i];
-    const processResult = await processPage(page, config, cache);
+    const processResult = await processPage(page, config);
     console.log(
       `Processed page: ${processResult.pageName} (${processResult.pageUrl})`
     );
