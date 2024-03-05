@@ -14,6 +14,17 @@ const { convertPropertiesToJekyllFrontmatter } = require("./frontmatter");
 // - create a wrapper function to write a file to disk
 // - create a wrapper function to delete a file on disk, if it exists
 
+const calculateFilename = (date, pageSlug) => {
+  let filename = pageSlug.slice(0, 50);
+  const lastChar = filename.charAt(filename.length - 1);
+  if (!lastChar.match(/[a-zA-Z0-9]/)) {
+    filename = filename.slice(0, -1);
+  }
+  filename = `${date}-${filename}.md`;
+  console.log(`Calculated filename: ${filename}\n\tfor page slug: ${pageSlug}`);
+  return filename;
+};
+
 const processPage = async (page, config, cache) => {
   const n2m = getNotionToMarkdownConverter();
   const date = config.date;
@@ -30,7 +41,8 @@ const processPage = async (page, config, cache) => {
   processResult.pageName = page?.properties?.Name?.title[0]?.plain_text;
   processResult.pageSlug = processResult.pageName
     .toLowerCase()
-    .replace(/\s/g, "-");
+    .replace(/\s/g, "-")
+    .replace(/[^a-zA-Z0-9-_]/g, "");
 
   // convert Notion page properties to Jekyll frontmatter
   const frontmatter = convertPropertiesToJekyllFrontmatter(page);
@@ -42,10 +54,7 @@ const processPage = async (page, config, cache) => {
   const mdContent = mdString?.parent;
 
   // calculate the output filename
-  processResult.pageSlug = processResult.pageSlug
-    .toLowerCase()
-    .replace(" ", "-");
-  const filename = `${date}-${processResult.pageSlug}.md`;
+  let filename = calculateFilename(date, processResult.pageSlug);
   const filepath = `${outputPath}/${filename}`;
   console.log(`About to write post to file: ${filepath}`);
 
