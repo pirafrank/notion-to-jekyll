@@ -8,6 +8,7 @@ const {
   configNotionToMarkdownTransformers,
   getNotionToMarkdownConverter,
 } = require("./clients");
+const { convertPropertiesToJekyllFrontmatter } = require("./frontmatter");
 
 // TODO:
 // - create a wrapper function to write a file to disk
@@ -31,9 +32,11 @@ const processPage = async (page, config, cache) => {
     .toLowerCase()
     .replace(/\s/g, "-");
 
+  // convert Notion page properties to Jekyll frontmatter
+  const frontmatter = convertPropertiesToJekyllFrontmatter(page);
   // configure the transformers for current Notion page processing
   configNotionToMarkdownTransformers(processResult, cache);
-
+  // actually process the page
   const mdBlocks = await n2m.pageToMarkdown(processResult.pageId);
   const mdString = await n2m.toMarkdownString(mdBlocks);
   const mdContent = mdString?.parent;
@@ -93,7 +96,7 @@ Deleting matching page in dir before writing new file...`
   // try writing the blocks to a markdown file.
   try {
     if (!config.dryRun) {
-      fs.writeFileSync(filepath, mdContent);
+      fs.writeFileSync(filepath, `${frontmatter}\n${mdContent}`);
       processResult.action = processResult.action + "WriteOk";
       console.log(`File "${filename}" has been saved!`);
     } else {
