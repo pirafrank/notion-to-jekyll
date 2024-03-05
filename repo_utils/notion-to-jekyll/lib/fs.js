@@ -13,7 +13,7 @@ const getAbsoluteRepoRoot = (dirpath) => {
   return dirpath.startsWith("/") ? dirpath : process.cwd() + "/" + dirpath;
 };
 
-const createDirectories = (dirPath) => {
+const createDirectory = (dirPath) => {
   const directories = dirPath.split("/");
   let currentPath = "";
   directories.forEach((dir) => {
@@ -83,7 +83,7 @@ const writeObjectToYamlFile = (filepath, object) => {
 
 module.exports = {
   getAbsoluteRepoRoot,
-  createDirectories,
+  createDirectory,
   checkForSlugInFolder,
   readYamlFile,
   listDirsInPath,

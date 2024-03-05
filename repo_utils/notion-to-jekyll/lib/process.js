@@ -3,7 +3,6 @@ const crypto = require("crypto");
 const {
   checkForSlugInFolder,
   getFolderWithMaxIdInPath,
-  createDirectories,
 } = require("./fs");
 const {
   configNotionToMarkdownTransformers,
@@ -32,10 +31,6 @@ const processPage = async (page, config, cache) => {
     .toLowerCase()
     .replace(/\s/g, "-");
 
-  // create the target asset directory for current Notion page
-  config.dryRun
-    && console.log(`** Dry-run mode ** : would have created directory: ${processResult.targetAssetPath}`)
-    || createDirectories(processResult.targetAssetPath);
   // configure the transformers for current Notion page processing
   configNotionToMarkdownTransformers(processResult, cache);
 

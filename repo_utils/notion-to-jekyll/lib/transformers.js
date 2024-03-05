@@ -1,6 +1,8 @@
 const { getConfig } = require("./init");
-const { writeObjectToJsonFile } = require("./fs");
+const { createDirectory, writeObjectToJsonFile } = require("./fs");
 const { extractExtensionFromUrl, downloadBinaryStream } = require("./fetch");
+
+let _createFolder = true;
 
 const persistCache = (config, cache) => {
   const cachePath = `${config.repoRoot}/.notion-to-jekyll.json`;
@@ -44,6 +46,17 @@ const putAssetOffline = async (url, fileName, iteration, block, cache) => {
       iteration.targetAssetDir,
       fileName
     );
+
+    // create the target asset directory for current Notion page
+    // if it doesn't exist
+    (config.dryRun &&
+      console.log(
+        `** Dry-run mode ** : would have created directory: ${iteration.targetAssetPath}`
+      )) ||
+      (_createFolder && createDirectory(iteration.targetAssetPath));
+    // only create the asset folder once per iteration (aka Notion page)
+    _createFolder = false;
+
     // first download...
     const writeToPath = `${iteration.targetAssetPath}/${fileName}`;
     await downloadBinaryStream(url, writeToPath);

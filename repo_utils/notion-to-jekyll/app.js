@@ -2,7 +2,7 @@ require('dotenv').config();
 const yargs = require('yargs');
 const CURRENT_VERSION = require("./package.json").version;
 const { initConfig } = require("./lib/init");
-const { createDirectories } = require("./lib/fs");
+const { createDirectory } = require("./lib/fs");
 const {
   initNotionClient,
   initNotionToMarkdownConverter,
@@ -20,9 +20,9 @@ const main = async (args) => {
     console.log(`Using repo directory: ${config.repoRoot}`);
     console.log(`Using output directory: ${config.outputPath}`);
 
-    createDirectories(config.postsPath);
-    createDirectories(config.draftsPath);
-    createDirectories(config.assetsPath);
+    createDirectory(config.postsPath);
+    createDirectory(config.draftsPath);
+    createDirectory(config.assetsPath);
 
     initNotionClient(config.notionToken);
     initNotionToMarkdownConverter();
