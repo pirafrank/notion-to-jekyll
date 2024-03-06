@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+const { putAssetOffline } = require('./fetch');
 
 //
 // Template for Jekyll frontmatter:
@@ -14,12 +16,12 @@
 
 const getFrontmatterTemplateObject = () => {
   return {
-    title: null,
-    subtitle: null,
-    description: null,
+    title: '',
+    subtitle: '',
+    description: '',
     category: [],
     tags: [],
-    seoimage: null,
+    seoimage: '',
   };
 }
 
@@ -53,20 +55,28 @@ const getFrontmatterAsString = (frontmatter) => {
     .join("\n")}\n---`;
 };
 
-const extractPropertiesFromPage = (page) => {
-  const properties = page?.properties;
+const extractPropertiesFromPage = async (iteration, properties) => {
   const frontmatter = getFrontmatterTemplateObject();
-
+  // populating fields
   frontmatter.title = properties?.Name?.title[0]?.plain_text;
   frontmatter.subtitle = properties?.Subtitle?.rich_text[0]?.plain_text;
   frontmatter.description = properties?.Description?.rich_text[0]?.plain_text;
   frontmatter.category.push(properties?.Category?.select?.name);
   frontmatter.tags = properties?.Tags?.multi_select.map((t) => t.name);
-  // TODO: handle SEO image asset download
-  //frontmatter.seoimage = properties?.SEOImage?.url;
-
+  // handling SEO image asset download
+  try {
+    let seoimageUrl = properties?.seoimage?.files[0]?.file?.url;
+    const firstPart = seoimageUrl.split("?")[0];
+    const hash = crypto.createHash("sha256").update(firstPart).digest("hex");
+    if (seoimageUrl) {
+      const { filename } = await putAssetOffline(seoimageUrl, iteration, hash);
+      frontmatter.seoimage = `${iteration.targetAssetDir}/${filename}`;
+    }
+  } catch (error) {
+    console.error(`Error processing SEO image for page: ${page.id}.`, error);
+  }
   return frontmatter;
-}
+};
 
 const validateFrontmatter = (frontmatter) => {
   if (!frontmatter.title) {
@@ -83,8 +93,8 @@ const validateFrontmatter = (frontmatter) => {
   }
 }
 
-const convertPropertiesToJekyllFrontmatter = (page) => {
-  const frontmatter = extractPropertiesFromPage(page);
+const convertPropertiesToJekyllFrontmatter = async (iteration, properties) => {
+  const frontmatter = await extractPropertiesFromPage(iteration, properties);
   validateFrontmatter(frontmatter);
   return getFrontmatterAsString(frontmatter);
 };
