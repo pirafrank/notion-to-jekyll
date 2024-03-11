@@ -11,9 +11,9 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "cwd": "${workspaceFolder}/repo_utils/notion-to-jekyll",
-      "program": "${workspaceFolder}/repo_utils/notion-to-jekyll/app.js",
-      "envFile": "${workspaceFolder}/repo_utils/notion-to-jekyll/.env"
+      "cwd": "${workspaceFolder}",
+      "program": "${workspaceFolder}/app.js",
+      "envFile": "${workspaceFolder}/.env"
     },
     {
       "type": "node",
@@ -22,12 +22,12 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "cwd": "${workspaceFolder}/repo_utils/notion-to-jekyll",
-      "program": "${workspaceFolder}/repo_utils/notion-to-jekyll/app.js",
+      "cwd": "${workspaceFolder}",
+      "program": "${workspaceFolder}/app.js",
       "args": [
         "--dry-run"
       ],
-      "envFile": "${workspaceFolder}/repo_utils/notion-to-jekyll/.env"
+      "envFile": "${workspaceFolder}/.env"
     }
   ]
 }
