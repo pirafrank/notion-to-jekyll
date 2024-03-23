@@ -34,7 +34,14 @@ The script requires the following environments variables to be set:
   - `0` means the date will be the current date;
   - a negative number means the date will be the current date minus the number of days;
   - a positive number means the date will be the current date plus the number of days.
-- `SITE_URL` is the URL of the website, including protocol. It is used to generate the `permalink` front matter.
-- `SITE_BASEURL` is the base URL of the website, appended to `SITE_URL` above.
+- `SITE_URL` is the URL of the website, including protocol. It is used to generate the `permalink` front matter;
+- `SITE_BASEURL` is the base URL of the website, appended to `SITE_URL` above;
+
+Optional configuration:
+
+- `NOTION_TO_JEKYLL_USER` is the user used to filter out pages published by this app. This to avoid infinite loops. Defaults to `notion-to-jekyll`.
+- `NOTION_PAGE_TYPE` is the type of pages to fetch. Defaults to `Blog post`.
+- `NOTION_READY_STATUS` is the status used to filter out pages that are ready to be published. Defaults to `Ready`.
+- `NOTION_DONE_STATUS` is the status used to filter out pages that are already published. Defaults to `Done`.
 
 Assets will always be published to the `static/postimages` directory.
