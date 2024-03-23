@@ -6,6 +6,7 @@
   "configurations": [
     {
       "type": "node",
+      "runtimeVersion": "20.11.1",
       "request": "launch",
       "name": "notion-to-jekyll",
       "skipFiles": [
@@ -17,6 +18,7 @@
     },
     {
       "type": "node",
+      "runtimeVersion": "20.11.1",
       "request": "launch",
       "name": "notion-to-jekyll (dry-run)",
       "skipFiles": [
