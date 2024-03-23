@@ -17,7 +17,7 @@ const main = async (args) => {
     const config = initConfig(args);
     config.dryRun && console.log(`Running in dry-run mode.`);
     console.log(`Using date: ${config.date}`);
-    console.log(`Using repo directory: ${config.repoRoot}`);
+    console.log(`Using Jekyll root directory: ${config.jekyllRoot}`);
     console.log(`Using output directory: ${config.outputPath}`);
 
     createDirectory(config.postsPath);
