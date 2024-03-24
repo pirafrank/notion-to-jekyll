@@ -1,0 +1,35 @@
+name: 'notion-to-jekyll - Publish Jekyll drafts and posts via Notion'
+description: 'A tool to manage Jekyll drafts and posts (including assets) via Notion '
+branding:
+  icon: edit-3
+  color: gray-dark
+inputs:
+  notion-token:
+    description: 'Notion integration auth web token'
+    required: true
+  notion-database-id:
+    description: 'ID of the Notion database to fetch blog posts from'
+    required: true
+  relative-date:
+    description: 'Int as string to determine the numbers of days of posts to fetch from Notion'
+    required: true
+  site-url:
+    description: 'Website URL, including protocol. Used to generate the `permalink` front matter'
+    required: true
+  site-baseurl:
+    description: 'Website base URL. Used to generate the `permalink` front matter'
+    required: false
+  jekyll-root:
+    description: 'Root directory of the Jekyll website. Do not set if root coincides with the git repo root'
+    required: false
+  publish-to-posts:
+    description: 'If "true" converted pages should be published to _posts. Otherwise saves to _drafts.'
+    required: false
+  dry-run:
+    description: 'If "true" runs in dry-run mode'
+    required: false
+runs:
+  using: 'docker'
+  image: 'action.dockerfile'
+  args:
+    - ${{ inputs.cmd }}
