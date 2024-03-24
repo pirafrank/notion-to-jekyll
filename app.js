@@ -2,7 +2,10 @@ require('dotenv').config();
 const yargs = require('yargs');
 const CURRENT_VERSION = require("./package.json").version;
 const { initConfig } = require("./lib/init");
-const { createDirectory } = require("./lib/fs");
+const { checkForFileInFolder,
+  createDirectory,
+  copyFile
+} = require("./lib/fs");
 const {
   initNotionClient,
   initNotionToMarkdownConverter,
@@ -19,6 +22,11 @@ const main = async (args) => {
     console.log(`Using date: ${config.date}`);
     console.log(`Using Jekyll root directory: ${config.jekyllRoot}`);
     console.log(`Using output directory: ${config.outputPath}`);
+
+    if(!checkForFileInFolder(config.jekyllRoot, config.notionToJekyllCache)) {
+      console.log(`${config.notionToJekyllCache} missing from ${config.jekyllRoot}. Copying...`);
+      copyFile(config.notionToJekyllCache, `${config.jekyllRoot}/${config.notionToJekyllCache}`);
+    }
 
     createDirectory(config.postsPath);
     createDirectory(config.draftsPath);
