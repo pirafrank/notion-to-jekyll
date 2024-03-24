@@ -1,4 +1,5 @@
 require('dotenv').config();
+const path = require("path");
 const yargs = require('yargs');
 const CURRENT_VERSION = require("./package.json").version;
 const { initConfig } = require("./lib/init");
@@ -16,6 +17,10 @@ const { parseResults } = require("./lib/process");
 const main = async (args) => {
   console.log(`notion-to-jekyll started.`);
 
+  // get script current directory
+  const scriptDir = path.dirname(__filename);
+  console.log(`Current script directory: ${scriptDir}`);
+
   try {
     const config = initConfig(args);
     config.dryRun && console.log(`Running in dry-run mode.`);
@@ -25,7 +30,10 @@ const main = async (args) => {
 
     if(!checkForFileInFolder(config.jekyllRoot, config.notionToJekyllCache)) {
       console.log(`${config.notionToJekyllCache} missing from ${config.jekyllRoot}. Copying...`);
-      copyFile(config.notionToJekyllCache, `${config.jekyllRoot}/${config.notionToJekyllCache}`);
+      copyFile(
+        `${scriptDir}/${config.notionToJekyllCache}`,
+        `${config.jekyllRoot}/${config.notionToJekyllCache}`
+      );
     }
 
     createDirectory(config.postsPath);
