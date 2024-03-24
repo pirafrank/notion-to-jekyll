@@ -19,4 +19,8 @@ if [[ "$DRY_RUN" == "true" ]]; then
   opts='--dry-run'
 fi
 
+if [[ ! -z "${INPUT_DEBUGINFO}" ]]; then
+  export
+fi
+
 node /app/app.js ${opts}

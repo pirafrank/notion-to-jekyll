@@ -28,6 +28,9 @@ inputs:
   dry-run:
     description: 'If "true" runs in dry-run mode'
     required: false
+  debuginfo:
+    description: 'If non null, prints debug info'
+    required: false
 runs:
   using: 'docker'
   image: 'action.dockerfile'
