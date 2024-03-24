@@ -1,0 +1,13 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: action.dockerfile
+    volumes:
+      - /some/dir:/workspace
+    user: "${UID}:${GID}"
+    environment:
+      - JEKYLL_ROOT=/workspace
+    env_file:
+      - .env
