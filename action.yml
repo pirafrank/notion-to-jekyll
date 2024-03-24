@@ -43,7 +43,7 @@ runs:
     # set JEKYLL_ROOT to make it a relative path for user input
     # workspace is mounted to /github/workspace by GitHub Action.
     # https://docs.github.com/en/actions/creating-actions/creating-a-docker-container-action#accessing-files-created-by-a-container-action
-    JEKYLL_ROOT: ${{ github.workspace }}/${{ inputs.jekyll-root }}
+    JEKYLL_ROOT: /github/workspace/${{ inputs.jekyll-root }}
     PUBLISH_TO_POSTS: ${{ inputs.publish-to-posts }}
     DRY_RUN: ${{ inputs.dry-run }}
     DEBUG_INFO: ${{ inputs.debuginfo }}
