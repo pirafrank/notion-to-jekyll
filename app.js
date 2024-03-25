@@ -13,6 +13,8 @@ const {
   getBlogPostsToPublish,
 } = require("./lib/clients");
 const { parseResults } = require("./lib/process");
+const ipc = require("./lib/ipc");
+
 
 const main = async (args) => {
   console.log(`notion-to-jekyll started.`);
