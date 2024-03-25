@@ -31,6 +31,11 @@ inputs:
   debuginfo:
     description: 'If non null, prints debug info'
     required: false
+outputs:
+  changed:
+    description: 'List of files added or changed in the Jekyll site'
+  deleted:
+    description: 'List of files deleted from the Jekyll site'
 runs:
   using: 'docker'
   image: 'action.dockerfile'

@@ -3,9 +3,11 @@ const path = require("path");
 const yargs = require('yargs');
 const CURRENT_VERSION = require("./package.json").version;
 const { initConfig } = require("./lib/init");
-const { checkForFileInFolder,
+const {
+  checkForFileInFolder,
   createDirectory,
-  copyFile
+  copyFile,
+  appendLineToFile,
 } = require("./lib/fs");
 const {
   initNotionClient,
@@ -13,8 +15,18 @@ const {
   getBlogPostsToPublish,
 } = require("./lib/clients");
 const { parseResults } = require("./lib/process");
-const ipc = require("./lib/ipc");
+const { ipc } = require("./lib/ipc");
 
+
+const writeResultToGithubOutputFile = (results) => {
+  if (!!process.env.GITHUB_OUTPUT) {
+    let line = "";
+    results.forEach((result) => {
+      line += `${result.label}=${result.value}\n`;
+    });
+    appendLineToFile(process.env.GITHUB_OUTPUT, line);
+  }
+};
 
 const main = async (args) => {
   console.log(`notion-to-jekyll started.`);
@@ -47,6 +59,11 @@ const main = async (args) => {
 
     const posts = await getBlogPostsToPublish(config);
     await parseResults(posts, config);
+
+    writeResultToGithubOutputFile([
+      { label: "changed", value: ipc().data.changed.join(" ") },
+      { label: "deleted", value: ipc().data.deleted.join(" ") },
+    ]);
 
     return 0;
   } catch (error) {
