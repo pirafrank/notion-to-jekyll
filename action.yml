@@ -22,8 +22,29 @@ inputs:
   jekyll-root:
     description: 'Root directory of the Jekyll website. Do not set if root coincides with the git repo root'
     required: false
+  drafts-dir:
+    description: 'Directory where drafts are saved'
+    required: false
+  posts-dir:
+    description: 'Directory where posts are saved'
+    required: false
+  assets-dir:
+    description: 'Directory where assets are saved (e.g. images and attachments from Notion)'
+    required: false
   publish-to-posts:
     description: 'If "true" converted pages should be published to _posts. Otherwise saves to _drafts.'
+    required: false
+  notion-to-jekyll-user:
+    description: 'Notion user to filter posts by'
+    required: false
+  notion-page-type:
+    description: 'Notion page type to filter posts by'
+    required: false
+  notion-ready-status:
+    description: 'Notion status of pages to process'
+    required: false
+  notion-done-status:
+    description: 'Notion status to set for published pages'
     required: false
   dry-run:
     description: 'If "true" runs in dry-run mode'
@@ -51,6 +72,13 @@ runs:
     # workspace is mounted to /github/workspace by GitHub Action.
     # https://docs.github.com/en/actions/creating-actions/creating-a-docker-container-action#accessing-files-created-by-a-container-action
     JEKYLL_ROOT: /github/workspace/${{ inputs.jekyll-root }}
+    DRAFTS_DIR: ${{ inputs.drafts-dir }}
+    POSTS_DIR: ${{ inputs.posts-dir }}
+    ASSETS_DIR: ${{ inputs.assets-dir }}
     PUBLISH_TO_POSTS: ${{ inputs.publish-to-posts }}
+    NOTION_TO_JEKYLL_USER: ${{ inputs.notion-to-jekyll-user }}
+    NOTION_PAGE_TYPE: ${{ inputs.notion-page-type }}
+    NOTION_READY_STATUS: ${{ inputs.notion-ready-status }}
+    NOTION_DONE_STATUS: ${{ inputs.notion-done-status }}
     DRY_RUN: ${{ inputs.dry-run }}
     DEBUG_INFO: ${{ inputs.debuginfo }}
