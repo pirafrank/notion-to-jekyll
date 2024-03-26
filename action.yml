@@ -1,7 +1,7 @@
 name: 'pirafrank/notion-to-jekyll'
 description: 'A tool to manage Jekyll drafts and posts (including assets) via Notion '
 branding:
-  icon: file
+  icon: feather
   color: white
 inputs:
   notion-token:

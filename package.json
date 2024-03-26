@@ -1,8 +1,13 @@
 {
-  "name": "notion-to-jekyll",
-  "version": "0.0.1",
+  "name": "@pirafrank/notion-to-jekyll",
+  "version": "0.1.0",
   "description": "notion to jekyll bridge",
+  "private": false,
   "main": "app.js",
+  "bin":{
+    "notion-to-jekyll": "app.js",
+    "ntj": "app.js"
+  },
   "scripts": {
     "app": "node app.js",
     "dry": "node app.js --dry-run",
@@ -10,18 +15,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pirafrank/fpiracom.git"
+    "url": "git+https://github.com/pirafrank/notion-to-jekyll.git"
   },
   "keywords": [
     "jekyll",
     "notion"
   ],
-  "author": "Francesco Pira (@pirafrank)",
+  "author": "pirafrank",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/pirafrank/fpiracom/issues"
+    "url": "https://github.com/pirafrank/notion-to-jekyll/issues"
   },
-  "homepage": "https://github.com/pirafrank/fpiracom/blob/main/repo_utils/notion-to-jekyll/README.md",
+  "homepage": "https://github.com/pirafrank/notion-to-jekyll",
   "dependencies": {
     "@notionhq/client": "^2.2.14",
     "axios": "^1.6.7",
