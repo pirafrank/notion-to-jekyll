@@ -1,4 +1,4 @@
-name: 'notion-to-jekyll - Publish Jekyll drafts and posts via Notion'
+name: 'notion-to-jekyll'
 description: 'A tool to manage Jekyll drafts and posts (including assets) via Notion '
 branding:
   icon: edit-3
@@ -36,6 +36,8 @@ outputs:
     description: 'List of files added or changed in the Jekyll site'
   deleted:
     description: 'List of files deleted from the Jekyll site'
+  dry-run:
+    description: 'If "true", it run in dry-run mode'
 runs:
   using: 'docker'
   image: 'action.dockerfile'

@@ -18,12 +18,33 @@ const { parseResults } = require("./lib/process");
 const { ipc } = require("./lib/ipc");
 
 
+const GITHUB_WORKSPACE_MOUNT = "/github/workspace/";
+
+const removePrefixFromStringArray = (array, prefix) => {
+  return array.map((item) => {
+    if(!item.startsWith(prefix)) return item;
+    return item.replace(prefix, "");
+  });
+}
+
+const populateGithubOutputFile = (config, changedFiles, deletedFiles) => {
+  // removed docker mount from file paths to have them passed
+  // as relative paths in the GitHub Action workspace
+  changedFiles = removePrefixFromStringArray(changedFiles, GITHUB_WORKSPACE_MOUNT);
+  deletedFiles = removePrefixFromStringArray(deletedFiles, GITHUB_WORKSPACE_MOUNT);
+  writeResultToGithubOutputFile([
+    { label: "dry-run", value: config.dryRun.toString() },
+    { label: "changed", value: changedFiles.join(" ") },
+    { label: "deleted", value: deletedFiles.join(" ") },
+  ]);
+};
+
 const writeResultToGithubOutputFile = (results) => {
+  console.log(`Writing results to ${process.env.GITHUB_OUTPUT}`);
   if (!!process.env.GITHUB_OUTPUT) {
-    let line = "";
-    results.forEach((result) => {
-      line += `${result.label}=${result.value}\n`;
-    });
+    const line = results.reduce((acc, i) => {
+      return acc + `${i.label}=${i.value}\n`;
+    }, "");
     appendLineToFile(process.env.GITHUB_OUTPUT, line);
   }
 };
@@ -60,10 +81,13 @@ const main = async (args) => {
     const posts = await getBlogPostsToPublish(config);
     await parseResults(posts, config);
 
-    writeResultToGithubOutputFile([
-      { label: "changed", value: ipc().data.changed.join(" ") },
-      { label: "deleted", value: ipc().data.deleted.join(" ") },
-    ]);
+    // if a file is both arrays, it means it was changed.
+    // we remove it from the deleted array.
+    const changedFiles = ipc.data.changed;
+    const deletedFiles = ipc.data.deleted.filter(
+      (item) => !changedFiles.includes(item)
+    );
+    populateGithubOutputFile(config, changedFiles, deletedFiles);
 
     return 0;
   } catch (error) {
