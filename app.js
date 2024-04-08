@@ -2,20 +2,20 @@ require('dotenv').config();
 const path = require("path");
 const yargs = require('yargs');
 const CURRENT_VERSION = require("./package.json").version;
-const { initConfig } = require("./lib/init");
+const { initConfig } = require("./lib/config/config");
 const {
   checkForFileInFolder,
   createDirectory,
   copyFile,
   appendLineToFile,
-} = require("./lib/fs");
+} = require("./lib/utils/fs");
 const {
   initNotionClient,
-  initNotionToMarkdownConverter,
   getBlogPostsToPublish,
-} = require("./lib/clients");
-const { parseResults } = require("./lib/process");
-const { ipc } = require("./lib/ipc");
+} = require("./lib/clients/notion");
+const { initNotionToMarkdownConverter } = require("./lib/clients/converter");
+const { parseResults } = require("./lib/process/process");
+const { ipc } = require("./lib/data/ipc");
 
 
 const GITHUB_WORKSPACE_MOUNT = "/github/workspace/";
