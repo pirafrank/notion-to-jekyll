@@ -2,6 +2,7 @@ require('dotenv').config();
 const path = require("path");
 const yargs = require('yargs');
 const CURRENT_VERSION = require("./package.json").version;
+const { info, error } = require("./lib/utils/log");
 const { initConfig } = require("./lib/config/config");
 const {
   checkForFileInFolder,
@@ -40,7 +41,7 @@ const populateGithubOutputFile = (config, changedFiles, deletedFiles) => {
 };
 
 const writeResultToGithubOutputFile = (results) => {
-  console.log(`Writing results to ${process.env.GITHUB_OUTPUT}`);
+  info(`Writing results to ${process.env.GITHUB_OUTPUT}`);
   if (!!process.env.GITHUB_OUTPUT) {
     const line = results.reduce((acc, i) => {
       return acc + `${i.label}=${i.value}\n`;
@@ -50,21 +51,21 @@ const writeResultToGithubOutputFile = (results) => {
 };
 
 const main = async (args) => {
-  console.log(`notion-to-jekyll started.`);
+  info(`notion-to-jekyll started.`);
 
   // get script current directory
   const scriptDir = path.dirname(__filename);
-  console.log(`Current script directory: ${scriptDir}`);
+  info(`Current script directory: ${scriptDir}`);
 
   try {
     const config = initConfig(args);
-    config.dryRun && console.log(`Running in dry-run mode.`);
-    console.log(`Using date: ${config.date}`);
-    console.log(`Using Jekyll root directory: ${config.jekyllRoot}`);
-    console.log(`Using output directory: ${config.outputPath}`);
+    config.dryRun && info(`Running in dry-run mode.`);
+    info(`Using date: ${config.date}`);
+    info(`Using Jekyll root directory: ${config.jekyllRoot}`);
+    info(`Using output directory: ${config.outputPath}`);
 
     if(!checkForFileInFolder(config.jekyllRoot, config.notionToJekyllCache)) {
-      console.log(`${config.notionToJekyllCache} missing from ${config.jekyllRoot}. Copying...`);
+      info(`${config.notionToJekyllCache} missing from ${config.jekyllRoot}. Copying...`);
       copyFile(
         path.join(scriptDir, config.notionToJekyllCache),
         path.join(config.jekyllRoot, config.notionToJekyllCache)
@@ -90,9 +91,9 @@ const main = async (args) => {
     populateGithubOutputFile(config, changedFiles, deletedFiles);
 
     return 0;
-  } catch (error) {
-    console.error(`Error: ${error.message}`);
-    return error.code ? error.code : 1;
+  } catch (err) {
+    error(`Error: ${err.message}`);
+    return err.code ? err.code : 1;
   }
 }
 
@@ -112,7 +113,7 @@ yargs
     handler: async (argv) => {
       // Run the main function
       const result = await main(argv);
-      console.log(`All done, exit code: ${result}`);
+      info(`All done, exit code: ${result}`);
       process.exit(result);
     },
   })
