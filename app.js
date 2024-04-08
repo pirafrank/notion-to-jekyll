@@ -66,8 +66,8 @@ const main = async (args) => {
     if(!checkForFileInFolder(config.jekyllRoot, config.notionToJekyllCache)) {
       console.log(`${config.notionToJekyllCache} missing from ${config.jekyllRoot}. Copying...`);
       copyFile(
-        `${scriptDir}/${config.notionToJekyllCache}`,
-        `${config.jekyllRoot}/${config.notionToJekyllCache}`
+        path.join(scriptDir, config.notionToJekyllCache),
+        path.join(config.jekyllRoot, config.notionToJekyllCache)
       );
     }
 
