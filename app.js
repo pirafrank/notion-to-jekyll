@@ -68,7 +68,8 @@ const main = async (args) => {
       info(`${config.notionToJekyllCache} missing from ${config.jekyllRoot}. Copying...`);
       copyFile(
         path.join(scriptDir, config.notionToJekyllCache),
-        path.join(config.jekyllRoot, config.notionToJekyllCache)
+        path.join(config.jekyllRoot, config.notionToJekyllCache),
+        false  // always copy or cache import will fail
       );
     }
 
@@ -80,7 +81,7 @@ const main = async (args) => {
     initNotionToMarkdownConverter();
 
     const posts = await getBlogPostsToPublish(config);
-    await parseResults(posts, config);
+    await parseResults(posts);
 
     // if a file is both arrays, it means it was changed.
     // we remove it from the deleted array.
