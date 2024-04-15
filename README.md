@@ -50,6 +50,13 @@ Optional configuration, with default values:
 - `NOTION_READY_STATUS` is the status used to filter out pages that are ready to be published. Defaults to `Ready`. It must exist in Notion.
 - `NOTION_DONE_STATUS` is the status used to filter out pages that are already published. Defaults to `Done`. It must exist in Notion.
 
+### Branch policy
+
+- `v1`, production version
+- `main`, latest **stable**
+- `develop`, latest *edge*
+- `feature/*`, development of feature x
+
 ## GitHub Action
 
 The script can be run as a step in a GitHub Actions workflow. For example:
