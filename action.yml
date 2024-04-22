@@ -59,6 +59,10 @@ outputs:
     description: 'List of files deleted from the Jekyll site'
   dry-run:
     description: 'If "true", it run in dry-run mode'
+  succeeded:
+    description: 'List of successfully processed pages'
+  failed:
+    description: 'List of pages which processing failed with error message'
 runs:
   using: 'docker'
   image: 'action.dockerfile'

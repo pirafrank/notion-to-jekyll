@@ -28,26 +28,28 @@ const removePrefixFromStringArray = (array, prefix) => {
   });
 }
 
-const populateGithubOutputFile = (config, changedFiles, deletedFiles) => {
-  // removed docker mount from file paths to have them passed
+const populateGithubOutputFile = (config, data) => {
+  // if we run in GitHub Action, to action output
+  if(!process.env.GITHUB_OUTPUT) return;
+  // removing docker mount from file paths to have them passed
   // as relative paths in the GitHub Action workspace
-  changedFiles = removePrefixFromStringArray(changedFiles, GITHUB_WORKSPACE_MOUNT);
-  deletedFiles = removePrefixFromStringArray(deletedFiles, GITHUB_WORKSPACE_MOUNT);
+  const changedFiles = removePrefixFromStringArray(data.changed, GITHUB_WORKSPACE_MOUNT);
+  const deletedFiles = removePrefixFromStringArray(data.deleted, GITHUB_WORKSPACE_MOUNT);
   writeResultToGithubOutputFile([
     { label: "dry-run", value: config.dryRun.toString() },
     { label: "changed", value: changedFiles.join(" ") },
     { label: "deleted", value: deletedFiles.join(" ") },
+    { label: "succeeded", value: data.succedeed.join(";") },
+    { label: "failed", value: data.failed.join(";") },
   ]);
 };
 
 const writeResultToGithubOutputFile = (results) => {
   info(`Writing results to ${process.env.GITHUB_OUTPUT}`);
-  if (!!process.env.GITHUB_OUTPUT) {
-    const line = results.reduce((acc, i) => {
-      return acc + `${i.label}=${i.value}\n`;
-    }, "");
-    appendLineToFile(process.env.GITHUB_OUTPUT, line);
-  }
+  const line = results.reduce((acc, i) => {
+    return acc + `${i.label}=${i.value}\n`;
+  }, "");
+  appendLineToFile(process.env.GITHUB_OUTPUT, line);
 };
 
 const main = async (args) => {
@@ -83,13 +85,7 @@ const main = async (args) => {
     const posts = await getBlogPostsToPublish(config);
     await parseResults(posts);
 
-    // if a file is both arrays, it means it was changed.
-    // we remove it from the deleted array.
-    const changedFiles = ipc.data.changed;
-    const deletedFiles = ipc.data.deleted.filter(
-      (item) => !changedFiles.includes(item)
-    );
-    populateGithubOutputFile(config, changedFiles, deletedFiles);
+    populateGithubOutputFile(config, ipc.data());
 
     return 0;
   } catch (err) {
