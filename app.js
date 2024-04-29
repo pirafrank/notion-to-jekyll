@@ -35,9 +35,11 @@ const populateGithubOutputFile = (config, data) => {
   // as relative paths in the GitHub Action workspace
   const changedFiles = removePrefixFromStringArray(data.changed, GITHUB_WORKSPACE_MOUNT);
   const deletedFiles = removePrefixFromStringArray(data.deleted, GITHUB_WORKSPACE_MOUNT);
-  const isDirty = changedFiles.length + deletedFiles.length > 0 ? true : false;
+  const isDirty =
+    !config.dryRun && changedFiles.length + deletedFiles.length > 0
+      ? true
+      : false;
   writeResultToGithubOutputFile([
-    { label: "dry-run", value: config.dryRun.toString() },
     { label: "changed", value: changedFiles.join(" ") },
     { label: "deleted", value: deletedFiles.join(" ") },
     { label: "succeeded", value: data.succedeed.join(";") },

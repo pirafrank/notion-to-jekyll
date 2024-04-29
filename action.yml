@@ -57,8 +57,6 @@ outputs:
     description: 'List of files added or changed in the Jekyll site'
   deleted:
     description: 'List of files deleted from the Jekyll site'
-  dry-run:
-    description: 'If "true", it run in dry-run mode'
   succeeded:
     description: 'List of successfully processed pages'
   failed:
