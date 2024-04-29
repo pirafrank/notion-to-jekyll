@@ -63,6 +63,8 @@ outputs:
     description: 'List of successfully processed pages'
   failed:
     description: 'List of pages which processing failed with error message'
+  dirty:
+    description: 'If "true", the Jekyll site has uncommitted changes'
 runs:
   using: 'docker'
   image: 'action.dockerfile'
