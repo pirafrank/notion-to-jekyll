@@ -66,7 +66,11 @@ const main = async (args) => {
   try {
     const config = initConfig(args);
     config.dryRun && info(`Running in dry-run mode.`);
-    info(`Using date: ${config.date}`);
+    if(config.startDate === config.endDate) {
+      info(`Using date: '${config.startDate}'`);
+    } else {
+      info(`Using date range: '${config.startDate}'-'${config.endDate}'`);
+    }
     info(`Using Jekyll root directory: ${config.jekyllRoot}`);
     info(`Using output directory: ${config.outputPath}`);
 
