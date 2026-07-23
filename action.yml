@@ -7,9 +7,12 @@ inputs:
   notion-token:
     description: 'Notion integration auth web token'
     required: true
-  notion-database-id:
-    description: 'ID of the Notion database to fetch blog posts from'
+  notion-data-source-id:
+    description: 'ID of the Notion data source to fetch blog posts from (API 2025-09-03+)'
     required: true
+  notion-database-id:
+    description: 'Deprecated. Notion database (container) ID. Kept for compatibility only; not used to query pages.'
+    required: false
   relative-date:
     description: 'Int as string to determine the numbers of days of posts to fetch from Notion'
     required: true
@@ -68,6 +71,7 @@ runs:
   image: 'action.dockerfile'
   env:
     NOTION_TOKEN: ${{ inputs.notion-token }}
+    NOTION_DATA_SOURCE_ID: ${{ inputs.notion-data-source-id }}
     NOTION_DATABASE_ID: ${{ inputs.notion-database-id }}
     RELATIVE_DATE: ${{ inputs.relative-date }}
     SITE_URL: ${{ inputs.site-url }}

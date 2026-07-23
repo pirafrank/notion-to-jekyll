@@ -27,7 +27,10 @@ npm run app
 The script requires the following environments variables to be set:
 
 - `NOTION_TOKEN` is the Notion integration auth web token.
-- `NOTION_DATABASE_ID` is the ID of the Notion database to fetch blog posts from.
+- `NOTION_DATA_SOURCE_ID` is the ID of the Notion data source to fetch blog posts from.
+  - Under Notion API version `2025-09-03`, databases are containers that can hold one or more data sources. This tool queries a specific data source.
+  - In the Notion app, open the database settings → **Manage data sources** → **Copy data source ID**.
+  - You can also discover it via `GET /v1/databases/{database_id}` (returns `data_sources[].id`).
 - `RELATIVE_DATE` is an int as string to determine the date of post to fetch.
   - `0` means the date will be the current date;
   - a negative number means the date will be the current date minus the number of days;
@@ -40,6 +43,7 @@ Required configuration (optional when running in GitHub Action):
 
 Optional configuration, with default values:
 
+- `NOTION_DATABASE_ID` is **deprecated**. It identifies the database (container) only and is not used to query pages. Prefer `NOTION_DATA_SOURCE_ID`.
 - `SITE_BASEURL` is the base URL of the website, appended to `SITE_URL` above.
 - `DRAFTS_DIR` is the Jekyll directory where drafts are stored. Defaults to `_drafts`.
 - `POSTS_DIR` is the Jekyll directory where posts are stored. Defaults to `_posts`.
@@ -71,7 +75,7 @@ The script can be run as a step in a GitHub Actions workflow. For example:
       id: notion_to_jekyll
       with:
         notion-token: ${{ secrets.NOTION_TOKEN }}
-        notion-database-id: ${{ vars.NOTION_TO_JEKYLL_DATABASE_ID }}
+        notion-data-source-id: ${{ vars.NOTION_TO_JEKYLL_DATA_SOURCE_ID }}
         publish-to-posts: ${{ vars.NOTION_TO_JEKYLL_PUBLISH_TO_POSTS }}
         relative-date: ${{ vars.NOTION_TO_JEKYLL_RELATIVE_DATE }}
         site-url: "https://fpira.com"

@@ -4,14 +4,14 @@
   "description": "notion to jekyll bridge",
   "private": false,
   "main": "app.js",
-  "bin":{
+  "bin": {
     "notion-to-jekyll": "app.js",
     "ntj": "app.js"
   },
   "scripts": {
     "app": "node app.js",
     "dry": "node app.js --dry-run",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test test/**/*.test.js"
   },
   "repository": {
     "type": "git",
@@ -28,11 +28,11 @@
   },
   "homepage": "https://github.com/pirafrank/notion-to-jekyll",
   "dependencies": {
-    "@notionhq/client": "^2.2.14",
+    "@notionhq/client": "^5.23.2",
     "axios": "^1.6.7",
     "dotenv": "^16.4.5",
     "js-yaml": "^4.1.0",
-    "notion-to-md": "3.1.1",
+    "notion-to-md": "3.1.9",
     "yargs": "^17.7.2"
   }
 }
