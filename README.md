@@ -50,11 +50,15 @@ Optional configuration, with default values:
 - `NOTION_READY_STATUS` is the status used to filter out pages that are ready to be published. Defaults to `Ready`. It must exist in Notion.
 - `NOTION_DONE_STATUS` is the status used to filter out pages that are already published. Defaults to `Done`. It must exist in Notion.
 
+### Release policy
+
+- `v1`, first release
+- `v2`, stable release with enhancements. Compatible with `NOTION_DATABASE_ID` definition and using Notion APIs *before* `2025-09-03`.
+
 ### Branch policy
 
-- `v1`, production version
 - `main`, latest **stable**
-- `develop`, latest *edge*
+- `develop`, latest *edge*. It may contain breaking changes.
 - `feature/*`, development of feature x
 
 ## GitHub Action
