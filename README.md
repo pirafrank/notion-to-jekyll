@@ -35,7 +35,6 @@ The script requires the following environments variables to be set:
   - `0` means the date will be the current date;
   - a negative number means the date will be the current date minus the number of days;
   - a positive number means the date will be the current date plus the number of days.
-- `SITE_URL` is the URL of the website, including protocol. It is used to generate the `permalink` front matter.
 
 Required configuration (optional when running in GitHub Action):
 
@@ -44,10 +43,9 @@ Required configuration (optional when running in GitHub Action):
 Optional configuration, with default values:
 
 - `NOTION_DATABASE_ID` is deprecated and **has been removed**. It has been replaced by `NOTION_DATA_SOURCE_ID`.
-- `SITE_BASEURL` is the base URL of the website, appended to `SITE_URL` above.
 - `DRAFTS_DIR` is the Jekyll directory where drafts are stored. Defaults to `_drafts`.
 - `POSTS_DIR` is the Jekyll directory where posts are stored. Defaults to `_posts`.
-- `ASSETS_DIR` is the Jekyll directory where assets are stored. Defaults to `assets`.
+- `ASSETS_DIR` is the Jekyll directory where assets are stored. Defaults to `assets`. Image and file URLs in generated markdown use `{{ site.baseurl }}/` with this directory.
 - `PUBLISH_TO_POSTS` is a boolean to determine where converted pages should be published to. If `true`, to `POSTS_DIR` directory. To `DRAFTS_DIR` otherwise.
 - `NOTION_TO_JEKYLL_USER` is the user used to filter out pages published by this app. This to avoid infinite loops. Defaults to `notion-to-jekyll`. It must exist in Notion.
 - `NOTION_PAGE_TYPE` is the type of pages to fetch. Defaults to `Blog post`. It must exist in Notion.
@@ -82,7 +80,6 @@ The script can be run as a step in a GitHub Actions workflow. For example:
         notion-data-source-id: ${{ vars.NOTION_TO_JEKYLL_DATA_SOURCE_ID }}
         publish-to-posts: ${{ vars.NOTION_TO_JEKYLL_PUBLISH_TO_POSTS }}
         relative-date: ${{ vars.NOTION_TO_JEKYLL_RELATIVE_DATE }}
-        site-url: "https://fpira.com"
         assets-dir: "static/postimages"
 ```
 

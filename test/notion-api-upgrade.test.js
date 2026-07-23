@@ -14,7 +14,6 @@ const REQUIRED_ENV = {
   NOTION_DATA_SOURCE_ID: "data-source-123",
   RELATIVE_DATE: "0",
   JEKYLL_ROOT: path.join(__dirname, "fixtures", "jekyll-root"),
-  SITE_URL: "https://example.com",
 };
 
 const setRequiredEnv = (overrides = {}) => {

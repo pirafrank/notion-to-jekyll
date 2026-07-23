@@ -13,12 +13,6 @@ inputs:
   relative-date:
     description: 'Int as string to determine the numbers of days of posts to fetch from Notion'
     required: true
-  site-url:
-    description: 'Website URL, including protocol. Used to generate the `permalink` front matter'
-    required: true
-  site-baseurl:
-    description: 'Website base URL. Used to generate the `permalink` front matter'
-    required: false
   jekyll-root:
     description: 'Root directory of the Jekyll website. Do not set if root coincides with the git repo root'
     required: false
@@ -70,8 +64,6 @@ runs:
     NOTION_TOKEN: ${{ inputs.notion-token }}
     NOTION_DATA_SOURCE_ID: ${{ inputs.notion-data-source-id }}
     RELATIVE_DATE: ${{ inputs.relative-date }}
-    SITE_URL: ${{ inputs.site-url }}
-    SITE_BASEURL: ${{ inputs.site-baseurl }}
     # set JEKYLL_ROOT to make it a relative path for user input
     # workspace is mounted to /github/workspace by GitHub Action.
     # https://docs.github.com/en/actions/creating-actions/creating-a-docker-container-action#accessing-files-created-by-a-container-action
