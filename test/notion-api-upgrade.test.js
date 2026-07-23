@@ -31,7 +31,6 @@ const clearManagedEnv = () => {
   for (const key of Object.keys(REQUIRED_ENV)) {
     delete process.env[key];
   }
-  delete process.env.NOTION_DATABASE_ID;
   delete process.env.PUBLISH_TO_POSTS;
 };
 
@@ -44,14 +43,12 @@ describe("config", () => {
     clearManagedEnv();
   });
 
-  it("requires NOTION_DATA_SOURCE_ID and accepts missing NOTION_DATABASE_ID", () => {
+  it("requires NOTION_DATA_SOURCE_ID", () => {
     setRequiredEnv();
-    delete process.env.NOTION_DATABASE_ID;
 
     const config = initConfig({});
 
     assert.equal(config.dataSourceId, "data-source-123");
-    assert.equal(config.databaseId, undefined);
   });
 
   it("fails when NOTION_DATA_SOURCE_ID is missing", () => {

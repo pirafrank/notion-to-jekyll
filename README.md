@@ -43,7 +43,7 @@ Required configuration (optional when running in GitHub Action):
 
 Optional configuration, with default values:
 
-- `NOTION_DATABASE_ID` is **deprecated**. It identifies the database (container) only and is not used to query pages. Prefer `NOTION_DATA_SOURCE_ID`.
+- `NOTION_DATABASE_ID` is deprecated and **has been removed**. It has been replaced by `NOTION_DATA_SOURCE_ID`.
 - `SITE_BASEURL` is the base URL of the website, appended to `SITE_URL` above.
 - `DRAFTS_DIR` is the Jekyll directory where drafts are stored. Defaults to `_drafts`.
 - `POSTS_DIR` is the Jekyll directory where posts are stored. Defaults to `_posts`.
