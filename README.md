@@ -58,6 +58,10 @@ Optional configuration, with default values:
 
 - `v1`, first release
 - `v2`, stable release with enhancements. Compatible with `NOTION_DATABASE_ID` definition and using Notion APIs *before* `2025-09-03`.
+- `v3`, stable release with breaking changes:
+  - `NOTION_DATA_SOURCE_ID` replaces `NOTION_DATABASE_ID`
+  - Notion APIs compatibility updated to `2025-09-03`
+  - support for post series (`Series` and `Part` optional properties)
 
 ### Branch policy
 
